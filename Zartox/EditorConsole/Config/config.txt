@@ -1,0 +1,6 @@
+logToFile=False
+pauseOnWarning=False
+pauseOnError=True
+clearOnPlay=False
+clearOnRecompile=True
+maxConsoleLines=50

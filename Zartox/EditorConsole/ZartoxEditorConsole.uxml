@@ -6,13 +6,13 @@
         <uie:ToolbarButton text="Options" display-tooltip-when-elided="true" name="toolbarOptionsBtn" />
     </uie:Toolbar>
     <ui:VisualElement name="rootVisualElement" style="flex-grow: 1; flex-shrink: 0; visibility: visible; display: flex;">
-        <ui:VisualElement name="consoleVisualElement" style="flex-grow: 1; display: none;">
+        <ui:VisualElement name="consoleVisualElement" style="flex-grow: 1; display: flex;">
             <ui:VisualElement name="logsVisualElement" style="flex-grow: 0; background-color: rgb(56, 56, 56); height: auto; max-height: 300px; min-height: auto;">
                 <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="logsScrollView" style="min-height: auto;" />
             </ui:VisualElement>
             <ui:VisualElement name="userInputVisualElement" style="margin-top: 0; padding-top: 0; flex-grow: 0; background-color: rgb(0, 64, 245); height: 20%;" />
         </ui:VisualElement>
-        <ui:VisualElement name="optionsVisualElement" style="flex-grow: 1; visibility: visible; display: flex; flex-direction: row;">
+        <ui:VisualElement name="optionsVisualElement" style="flex-grow: 1; visibility: visible; display: none; flex-direction: row;">
             <ui:VisualElement style="width: 231px; height: 205px; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.24); border-left-width: 10px; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 10px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; flex-grow: 0;">
                 <ui:VisualElement style="flex-direction: row; flex-grow: 0;">
                     <ui:Toggle label="logToFile" value="false" usage-hints="None" name="logToFileToggle" style="width: 100%; margin-right: 3px; opacity: 1; padding-right: 0;" />
@@ -37,6 +37,7 @@
             </ui:VisualElement>
             <ui:VisualElement style="width: 231px; height: 205px; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.24); border-left-width: 10px; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 10px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; flex-grow: 0;" />
             <ui:VisualElement style="width: 231px; height: 205px; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.24); border-left-width: 10px; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 10px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; flex-grow: 0;" />
+            <ui:Button text="Save" display-tooltip-when-elided="true" name="saveBtn" style="background-color: rgb(21, 129, 233); -unity-font-style: bold;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
