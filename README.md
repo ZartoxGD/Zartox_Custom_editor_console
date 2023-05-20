@@ -1,7 +1,7 @@
 # Zartox_Custom_editor_console
 A custom console made with UiToolkit in Unity.
 
-I'll add informations on how to use it once it's done. (Design is not my actual priority x))
+I'll add informations on how to use it once it's done.
 
 ## Changelog:
 ---------------------------------------
@@ -13,6 +13,7 @@ I'll add informations on how to use it once it's done. (Design is not my actual 
         - Added Timestamps
 ---------------------------------------
 ### 0.0.2:
+        - Decided that design is not the priority...
         - Added an option menu
         - Added a config file to save settings
         - Added a menu button to Generate a default config file
