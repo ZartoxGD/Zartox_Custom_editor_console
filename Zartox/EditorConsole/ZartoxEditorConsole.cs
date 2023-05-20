@@ -23,21 +23,36 @@ public class ZartoxEditorConsole : EditorWindow
 
     public static ZartoxEditorConsole console;
 
+    #region Console refs
     private ToolbarButton toolbarClearBtn;
     private ToolbarButton toolbarOptionsBtn;
     private ScrollView logsScrollView;
     private VisualElement consoleVisualElement;
     private VisualElement optionsVisualElement;
+    #endregion
+
+    #region Options refs
+    private Toggle logToFileToggle;
+    private Toggle pauseOnWarningToggle;
+    private Toggle pauseOnErrorToggle;
+    private Toggle clearOnPlayToggle;
+    private Toggle clearOnRecompileToggle;
+    private IntegerField maxConsoleLinesIntField;
+    #endregion
 
     private static DateTime consoleStartTime;
     private bool isOptionsOpened = false;
 
+    #region Config
     private bool logToFile = false;
     private int maxConsoleLines = 20;
     private bool pauseOnWarning = false;
     private bool pauseOnError = false;
     private bool clearOnPlay = false;
     private bool clearOnRecompile = false;
+    #endregion
+
+    #region Init
 
     [MenuItem("Tools/TEST")]
     public static void Init()
@@ -76,12 +91,20 @@ public class ZartoxEditorConsole : EditorWindow
         visualTree.CloneTree(root);
         root.styleSheets.Add(styleSheet);
 
-        //Refs
+        //Console Refs
         logsScrollView = root.Q<ScrollView>("logsScrollView");
         toolbarClearBtn = root.Q<ToolbarButton>("toolbarClearBtn");
         toolbarOptionsBtn = root.Q<ToolbarButton>("toolbarOptionsBtn");
         optionsVisualElement = root.Q<VisualElement>("optionsVisualElement");
         consoleVisualElement = root.Q<VisualElement>("consoleVisualElement");
+
+        //Options Refs
+        logToFileToggle = root.Q<Toggle>("logToFileToggle");
+        pauseOnWarningToggle = root.Q<Toggle>("pauseOnWarningToggle");
+        pauseOnErrorToggle = root.Q<Toggle>("pauseOnErrorToggle");
+        clearOnPlayToggle = root.Q<Toggle>("clearOnPlayToggle");
+        clearOnRecompileToggle = root.Q<Toggle>("clearOnRecompileToggle");
+        maxConsoleLinesIntField = root.Q<IntegerField>("maxConsoleLinesIntField");
 
         //Events
         toolbarClearBtn.clicked += ClearConsole;
@@ -89,12 +112,14 @@ public class ZartoxEditorConsole : EditorWindow
 
     }
 
+    #endregion
+
+    #region Events
     private void HandleOptionsBtn()
     {
-        //TODO: S'occuper du enu des options...
         //1) Afficher/cacher la console/les options
         //2) S'occupper de la logique pour le UI et mettre un bouton save qui save tout vers un fichier de config (si l'user ferme la mm)
-        //3) Dans Init aller chopper les valeurs dans ce fichier
+        //3) Dans Init aller choper les valeurs dans ce fichier
         if (!isOptionsOpened)
         {
             consoleVisualElement.style.display = DisplayStyle.None;
@@ -112,6 +137,23 @@ public class ZartoxEditorConsole : EditorWindow
     private void ClearConsole()
     {
         logsScrollView.Clear();
+    }
+
+    #endregion
+
+    private void SetOptionsToConfig()
+    {
+        //TODO: Set le UI des options aux valeurs de la config
+    }
+
+    private void LoadConfig()
+    {
+        //TODO: Charge et set les vars avec la config inscrite dans le fichier
+    }
+
+    private void SaveConfig()
+    {
+        //TODO: Save toutes les options dans la config
     }
 
     public void Log(string message, Level logLevel=Level.Debug)
