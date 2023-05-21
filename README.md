@@ -19,3 +19,8 @@ I'll add informations on how to use it once it's done.
         - Added a menu button to Generate a default config file
         - Added a menu button to Delete the actual config file
 ---------------------------------------
+### 0.0.3:
+        - Added interface to send commands to the console (early)
+        - Added a test command (clear, but that does not clear the console)
+        - Added a way to create simple custom commands
+---------------------------------------
