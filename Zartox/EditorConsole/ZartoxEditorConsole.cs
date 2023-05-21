@@ -2,10 +2,12 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Enums;
 using System;
 using System.IO;
 using System.Collections.Generic;
+
+using Enums;
+using Commands;
 
 namespace Enums
 {
@@ -31,6 +33,8 @@ public class ZartoxEditorConsole : EditorWindow
     private ScrollView logsScrollView;
     private VisualElement consoleVisualElement;
     private VisualElement optionsVisualElement;
+    private TextField userCommandTextField;
+    private Button sendCommandBtn;
     #endregion
 
     #region Options refs
@@ -47,6 +51,7 @@ public class ZartoxEditorConsole : EditorWindow
     private bool isOptionsOpened = false;
     private static string configDirPath;
     private static string configPath;
+    private Dictionary<string, ICommand> commands;
 
     #region Config
     private bool logToFile = false;
@@ -55,6 +60,10 @@ public class ZartoxEditorConsole : EditorWindow
     private bool pauseOnError = true;
     private bool clearOnPlay = false;
     private bool clearOnRecompile = true;
+
+    //TODO: Ajouter les vars en dessous au fichier etc...
+    private int consoleInputTextSize;
+    private Color consoleInputColor;
     #endregion
 
     #region Init
@@ -64,7 +73,6 @@ public class ZartoxEditorConsole : EditorWindow
     {
         ZartoxEditorConsole wnd = GetWindow<ZartoxEditorConsole>();
         wnd.titleContent = new GUIContent("ZartoxEditorConsole");
-
     }
 
     private void OnEnable()
@@ -78,6 +86,7 @@ public class ZartoxEditorConsole : EditorWindow
             console = GetWindow<ZartoxEditorConsole>();
 
         LoadConfig();
+        RegisterCommands();
     }
 
     public void CreateGUI()
@@ -99,6 +108,8 @@ public class ZartoxEditorConsole : EditorWindow
         toolbarOptionsBtn = root.Q<ToolbarButton>("toolbarOptionsBtn");
         optionsVisualElement = root.Q<VisualElement>("optionsVisualElement");
         consoleVisualElement = root.Q<VisualElement>("consoleVisualElement");
+        userCommandTextField = root.Q<TextField>("userCommandTextField");
+        sendCommandBtn = root.Q<Button>("sendCommandBtn");
 
         //Options Refs
         logToFileToggle = root.Q<Toggle>("logToFileToggle");
@@ -113,7 +124,64 @@ public class ZartoxEditorConsole : EditorWindow
         toolbarClearBtn.clicked += ClearConsole;
         toolbarOptionsBtn.clicked += HandleOptionsBtn;
         saveBtn.clicked += SaveConfig;
+        sendCommandBtn.clicked += ExecuteUserCommand;
 
+
+        userCommandTextField.label = Application.productName + ": ";
+    }
+
+    private void LoadConfig()
+    {
+        if (File.Exists(configPath))
+        {
+            Dictionary<string, string> configValues = new Dictionary<string, string>();
+            string[] configFileLines = File.ReadAllLines(configPath);
+
+            foreach (string line in configFileLines)
+            {
+                string[] keyValue = line.Split('=');
+
+                if (keyValue.Length == 2)
+                {
+                    configValues[keyValue[0].Trim()] = keyValue[1].Trim();
+                }
+            }
+
+            if (configValues.ContainsKey("logToFile"))
+                logToFile = bool.Parse(configValues["logToFile"]);
+
+            if (configValues.ContainsKey("pauseOnWarning"))
+                pauseOnWarning = bool.Parse(configValues["pauseOnWarning"]);
+
+            if (configValues.ContainsKey("pauseOnError"))
+                pauseOnError = bool.Parse(configValues["pauseOnError"]);
+
+            if (configValues.ContainsKey("clearOnPlay"))
+                clearOnPlay = bool.Parse(configValues["clearOnPlay"]);
+
+            if (configValues.ContainsKey("clearOnRecompile"))
+                clearOnRecompile = bool.Parse(configValues["clearOnRecompile"]);
+
+            if (configValues.ContainsKey("maxConsoleLines"))
+                maxConsoleLines = int.Parse(configValues["maxConsoleLines"]);
+
+            Log("Configuration loaded...", Level.Valid);
+
+        }
+        else
+        {
+            Log("Config not found... Please generate config file first...", Level.Error);
+            GenerateDefaultConfigFile();
+            LoadConfig();
+        }
+    }
+
+    private void RegisterCommands()
+    {
+        commands = new Dictionary<string, ICommand>();
+
+        //Add your commands here:
+        commands["clear"] = new ClearCommand();
     }
 
     #endregion
@@ -152,54 +220,6 @@ public class ZartoxEditorConsole : EditorWindow
             maxConsoleLinesIntField.value = maxConsoleLines;
 }
 
-    private void LoadConfig()
-    {
-        //TODO: Charge et set les vars avec la config inscrite dans le fichier
-        
-        if (File.Exists(configPath))
-        {
-            Dictionary<string, string> configValues = new Dictionary<string, string>();
-            string[] configFileLines = File.ReadAllLines(configPath);
-
-            foreach (string line in configFileLines)
-            {
-                string[] keyValue = line.Split('=');
-
-                if (keyValue.Length == 2)
-                {
-                    configValues[keyValue[0].Trim()] = keyValue[1].Trim();
-                }
-            }
-
-            if (configValues.ContainsKey("logToFile"))
-                logToFile = bool.Parse(configValues["logToFile"]);
-
-            if (configValues.ContainsKey("pauseOnWarning"))
-                pauseOnWarning = bool.Parse(configValues["pauseOnWarning"]);
-            
-            if (configValues.ContainsKey("pauseOnError"))
-                pauseOnError = bool.Parse(configValues["pauseOnError"]);
-            
-            if (configValues.ContainsKey("clearOnPlay"))
-                clearOnPlay = bool.Parse(configValues["clearOnPlay"]);
-            
-            if (configValues.ContainsKey("clearOnRecompile"))
-                clearOnRecompile = bool.Parse(configValues["clearOnRecompile"]);
-            
-            if (configValues.ContainsKey("maxConsoleLines"))
-                maxConsoleLines = int.Parse(configValues["maxConsoleLines"]);
-
-            Log("Configuration loaded...", Level.Valid);
-
-        }
-        else
-        {
-            Log("Config not found... Please generate config file first...", Level.Error);
-            GenerateDefaultConfigFile();
-            LoadConfig();
-        }
-    }
-
     private void SaveConfig()
     {
         //TODO: Save toutes les options dans la config
@@ -237,7 +257,6 @@ public class ZartoxEditorConsole : EditorWindow
 
         DeleteLogsOverLimit();
 
-        //set to lowest item
         logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
     }
 
@@ -317,6 +336,27 @@ public class ZartoxEditorConsole : EditorWindow
             console.Log("There is no config file to delete...", Level.Warning);
         }
 
+    }
+
+    #endregion
+
+    #region Commands
+
+    private void ExecuteUserCommand()
+    {
+        string command = userCommandTextField.value;
+
+        if (commands.TryGetValue(command, out ICommand commandObject))
+        {
+            commandObject.Execute();
+        }
+        else
+        {
+            Log("Invalid command", Level.Error);
+        }
+
+        // Effacer le champ de texte après l'exécution
+        userCommandTextField.value = "";
     }
 
     #endregion
