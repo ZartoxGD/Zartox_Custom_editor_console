@@ -24,3 +24,15 @@ I'll add informations on how to use it once it's done.
         - Added a test command (clear, but that does not clear the console)
         - Added a way to create simple custom commands
 ---------------------------------------
+### 0.0.4:
+        - Added a clear command
+        - Added a command success message 
+        - Added a command failed message
+        - Added a tooltip to every log in console (not required)
+---------------------------------------
+
+
+## Known bugs:
+---------------------------------------
+        - Opening 2 instances of the console [Temporary fix: reset yout UI to default]
+---------------------------------------
