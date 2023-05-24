@@ -10,3 +10,15 @@
     width: auto;
     min-width: 90px;
 }
+
+.logLabel {
+    background-color: rgba(255, 0, 0, 0);
+}
+
+.logLabel:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.logLabel:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+}

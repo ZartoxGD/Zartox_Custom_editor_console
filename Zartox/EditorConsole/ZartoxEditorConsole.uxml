@@ -11,10 +11,11 @@
                 <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="logsScrollView" style="min-height: auto;" />
             </ui:VisualElement>
             <ui:VisualElement name="userInputVisualElement" style="margin-top: 0; padding-top: 0; flex-grow: 0; background-color: rgb(56, 56, 56); height: 20%;">
-                <ui:VisualElement style="flex-direction: row; flex-grow: 1; justify-content: flex-start; align-items: center;">
+                <ui:VisualElement style="flex-direction: row; flex-grow: 0; justify-content: flex-start; align-items: center;">
                     <ui:TextField picking-mode="Ignore" label="Nom du projet: " text="enter command here..." name="userCommandTextField" style="width: auto; color: rgb(210, 210, 210); opacity: 1;" />
                     <ui:Button text="Send" display-tooltip-when-elided="true" name="sendCommandBtn" style="margin-left: 10px;" />
                 </ui:VisualElement>
+                <ui:Label display-tooltip-when-elided="true" name="logDescriptionLabel" style="white-space: normal;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="optionsVisualElement" style="flex-grow: 1; visibility: visible; display: none; flex-direction: row;">

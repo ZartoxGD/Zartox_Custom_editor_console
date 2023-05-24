@@ -24,7 +24,8 @@ public class TESTMONO : MonoBehaviour
 
     private void LogRandomNumber()
     {
-        console.Log(Random.Range(0, 100).ToString(), (Enums.Level)Random.Range(0, 5));
+        int rand = Random.Range(0, 100);
+        console.Log(rand.ToString(), rand.ToString(), this.gameObject, (Enums.Level)Random.Range(0, 5));
     }
 
     private void TestEveryLog()

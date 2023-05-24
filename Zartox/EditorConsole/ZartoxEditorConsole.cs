@@ -23,7 +23,10 @@ namespace Enums
 
 
 public class ZartoxEditorConsole : EditorWindow
-{
+{//TODO: Ajouter un context lorsque l'on survole un des labels dans le scroll view, et ajouter un tooltip à ces labels donc créer une nvl fonc Log
+    //TODO: Créer un objet log à chaque ligne écrite dans la console... Stocker un ID pour pouvoir les reconnaittre dans une liste et lorsque l'user
+    //clique sur un label afficher les infos et afficher le contexte (surbillance de l'objet qui appele) 
+//TODO: peut etre ajouter richText aux labels pour ajouter des couleurs (param dans Label)
 
     public static ZartoxEditorConsole console;
 
@@ -35,6 +38,7 @@ public class ZartoxEditorConsole : EditorWindow
     private VisualElement optionsVisualElement;
     private TextField userCommandTextField;
     private Button sendCommandBtn;
+    private Label logDescriptionLabel;
     #endregion
 
     #region Options refs
@@ -110,6 +114,7 @@ public class ZartoxEditorConsole : EditorWindow
         consoleVisualElement = root.Q<VisualElement>("consoleVisualElement");
         userCommandTextField = root.Q<TextField>("userCommandTextField");
         sendCommandBtn = root.Q<Button>("sendCommandBtn");
+        logDescriptionLabel = root.Q<Label>("logDescriptionLabel");
 
         //Options Refs
         logToFileToggle = root.Q<Toggle>("logToFileToggle");
@@ -206,7 +211,7 @@ public class ZartoxEditorConsole : EditorWindow
         }
     }
 
-    private void ClearConsole() { logsScrollView.Clear(); }
+    public void ClearConsole() { logsScrollView.Clear(); }
 
     private void SetOptionsToConfig()
     {
@@ -252,12 +257,86 @@ public class ZartoxEditorConsole : EditorWindow
     public void Log(string message, Level logLevel=Level.Debug)
     {
         Label label = new Label(GetFormattedMessage(message, logLevel));
+        label.focusable = true;
+        label.AddToClassList("logLabel");
         SetLabelTextColor(label, logLevel);
         logsScrollView.Add(label);
 
         DeleteLogsOverLimit();
 
         logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
+    }
+    
+    public void Log(string message, GameObject contextObject, Level logLevel=Level.Debug)
+    {
+        Label label = new Label(GetFormattedMessage(message, logLevel));
+        label.focusable = true;
+        label.AddToClassList("logLabel");
+        SetLabelTextColor(label, logLevel);
+        logsScrollView.Add(label);
+
+        DeleteLogsOverLimit();
+
+        logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
+
+        label.RegisterCallback<FocusInEvent>(evt =>
+        {
+            HighlightObjectInHierarchy(contextObject);
+        });
+    }
+    
+    public void Log(string message, string description, Level logLevel = Level.Debug)
+    {
+        Label label = new Label(GetFormattedMessage(message, logLevel));
+        label.focusable = true;
+        label.AddToClassList("logLabel");
+        SetLabelTextColor(label, logLevel);
+        logsScrollView.Add(label);
+
+        DeleteLogsOverLimit();
+
+        logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
+
+        label.RegisterCallback<FocusInEvent>(evt =>
+        {
+            logDescriptionLabel.text = description;
+        });
+
+        label.RegisterCallback<FocusOutEvent>(evt =>
+        {
+            logDescriptionLabel.text = "";
+        });
+
+    }
+    
+    public void Log(string message, string description, GameObject contextObject, Level logLevel = Level.Debug)
+    {
+        Label label = new Label(GetFormattedMessage(message, logLevel));
+        label.focusable = true;
+        label.AddToClassList("logLabel");
+        SetLabelTextColor(label, logLevel);
+        logsScrollView.Add(label);
+
+        DeleteLogsOverLimit();
+
+        logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
+
+        label.RegisterCallback<FocusInEvent>(evt =>
+        {
+            logDescriptionLabel.text = description;
+            HighlightObjectInHierarchy(contextObject);
+        });
+
+        label.RegisterCallback<FocusOutEvent>(evt =>
+        {
+            logDescriptionLabel.text = "";
+        });
+    }
+
+    private void HighlightObjectInHierarchy(GameObject gameObject)
+    {
+        if (gameObject != null)
+            EditorGUIUtility.PingObject(gameObject);
     }
 
     private void DeleteLogsOverLimit()
