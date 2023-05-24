@@ -26,9 +26,9 @@ I'll add informations on how to use it once it's done.
 ---------------------------------------
 ### 0.0.4:
         - Added a clear command
-        - Added a command success message 
+        - Added a command success message
         - Added a command failed message
-        - Added a tooltip to every log in console (not required)
+        - Added a description to logs (optional, made to have more infos without making a mess inside the console)
 ---------------------------------------
 
 
