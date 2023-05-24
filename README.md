@@ -29,6 +29,8 @@ I'll add informations on how to use it once it's done.
         - Added a command success message
         - Added a command failed message
         - Added a description to logs (optional, made to have more infos without making a mess inside the console)
+        - Added focus on logs to select them
+        - Added a context for logs (when clicked: highlight gameObject in hierarchy)
 ---------------------------------------
 
 
