@@ -37,5 +37,4 @@ I'll add informations on how to use it once it's done.
 ## Known bugs:
 ---------------------------------------
         - Opening 2 instances of the console [Temporary fix: reset yout UI to default]
-        - If you use the log with contextObject and you pass in an object that as been destroyed you will get a NullExceptionError (not tested but pretty sure it will happen, got no time to fix it right now)
 ---------------------------------------
