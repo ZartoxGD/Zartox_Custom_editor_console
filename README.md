@@ -42,6 +42,7 @@ I'll add informations on how to use it once it's done.
         - Added a delete every log menu button
         - Added a delete every log file created today...
         - Every log file created is now named the date it was created
+        - Added a mark in the log file for playmode start and playmode end 
 ---------------------------------------
 
 
