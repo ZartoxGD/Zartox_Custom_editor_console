@@ -37,6 +37,7 @@ I'll add informations on how to use it once it's done.
         - Added play mode pause on warning (optional)
         - Added clear console on play mode enter (optional)
         - Added clear console on recompile (optional)
+        - Added a simple way to create help messages for every command you created
 ---------------------------------------
 
 
