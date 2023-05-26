@@ -38,6 +38,10 @@ I'll add informations on how to use it once it's done.
         - Added clear console on play mode enter (optional)
         - Added clear console on recompile (optional)
         - Added a simple way to create help messages for every command you created
+        - Added a file that keep trace of every line in the console (optional)
+        - Added a delete every log menu button
+        - Added a delete every log file created today...
+        - Every log file created is now named the date it was created
 ---------------------------------------
 
 
