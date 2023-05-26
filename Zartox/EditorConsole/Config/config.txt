@@ -1,6 +1,6 @@
-logToFile=False
+logToFile=True
 pauseOnWarning=False
-pauseOnError=True
+pauseOnError=False
 clearOnPlay=False
-clearOnRecompile=True
+clearOnRecompile=False
 maxConsoleLines=50

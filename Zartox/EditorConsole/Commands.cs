@@ -14,9 +14,7 @@ namespace Commands
     {
         public string name => "clear";
 
-        public string description => "Clear the console of any log";
-
-        public string help => "clear";
+        public string help => "Clear the console";
 
         public string onSuccessMessage => "";
 

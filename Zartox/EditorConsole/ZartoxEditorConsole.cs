@@ -23,10 +23,11 @@ namespace Enums
 
 
 public class ZartoxEditorConsole : EditorWindow
-{//TODO: Ajouter un context lorsque l'on survole un des labels dans le scroll view, et ajouter un tooltip à ces labels donc créer une nvl fonc Log
-    //TODO: Créer un objet log à chaque ligne écrite dans la console... Stocker un ID pour pouvoir les reconnaittre dans une liste et lorsque l'user
-    //clique sur un label afficher les infos et afficher le contexte (surbillance de l'objet qui appele) 
-//TODO: peut etre ajouter richText aux labels pour ajouter des couleurs (param dans Label)
+{
+    //TODO: Créer un objet log à chaque ligne écrite dans la console... Stocker un ID pour pouvoir les reconnaitre dans une liste et lorsque l'user
+//TODO: peut etre ajouter richText aux labels pour ajouter des couleurs (param dans Label ui builder)
+//TODO: dans le fichier texte log à la date d'aujourdhui si logToFile == true alors à chaque fois que
+//l'on quitte le mode play rajouter une ligne à la fin de ce fichier pour signifier une test 
 
     public static ZartoxEditorConsole console;
 
@@ -131,6 +132,8 @@ public class ZartoxEditorConsole : EditorWindow
         saveBtn.clicked += SaveConfig;
         sendCommandBtn.clicked += ExecuteUserCommand;
 
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
 
         userCommandTextField.label = Application.productName + ": ";
     }
@@ -191,6 +194,46 @@ public class ZartoxEditorConsole : EditorWindow
 
     #endregion
 
+    private void OnAfterAssemblyReload()
+    {
+        if(clearOnRecompile)
+            ClearConsole();
+    }
+
+    private void OnPlayModeStateChanged(PlayModeStateChange state)
+    {
+        string fileName = Application.dataPath + "/Logs/" + DateTime.Now.ToString("yyyy-MM-dd") + "_ConsoleLogs.txt";
+        //TODO: Si le fichier n'éxiste pas et que logtofile ==true alors le créer et rajouter la ligne start
+
+        if (state == PlayModeStateChange.EnteredPlayMode)
+        {
+            if (clearOnPlay)
+                ClearConsole();
+
+            if (File.Exists(fileName) && logToFile)
+            {
+                File.AppendAllText(fileName, "\n");
+                File.AppendAllText(fileName, "-------------SESSION START-------------\n");
+            }
+        }
+        else if (state == PlayModeStateChange.ExitingPlayMode && logToFile)
+        {
+            if (File.Exists(fileName))
+            {
+                File.AppendAllText(fileName, "-------------SESSION END-------------\n");
+                File.AppendAllText(fileName, "\n");
+            }
+        }
+        else if (state == PlayModeStateChange.EnteredEditMode)
+        {
+
+        }
+        else if (state == PlayModeStateChange.ExitingEditMode)
+        {
+
+        }
+    }
+
     private void HandleOptionsBtn()
     {
         //1) Afficher/cacher la console/les options V
@@ -215,7 +258,6 @@ public class ZartoxEditorConsole : EditorWindow
 
     private void SetOptionsToConfig()
     {
-        //TODO: Set le UI des options aux valeurs de la config
 
             logToFileToggle.value = logToFile;
             pauseOnWarningToggle.value = pauseOnWarning;
@@ -227,7 +269,6 @@ public class ZartoxEditorConsole : EditorWindow
 
     private void SaveConfig()
     {
-        //TODO: Save toutes les options dans la config
 
         logToFile = logToFileToggle.value;
         pauseOnWarning = pauseOnWarningToggle.value;
@@ -265,6 +306,9 @@ public class ZartoxEditorConsole : EditorWindow
         DeleteLogsOverLimit();
 
         logsScrollView.scrollOffset = new Vector2(0, float.MaxValue);
+
+        LogToFile(message, logLevel);
+        PausePlayMode(logLevel);
     }
     
     public void Log(string message, GameObject contextObject, Level logLevel=Level.Debug)
@@ -283,6 +327,9 @@ public class ZartoxEditorConsole : EditorWindow
         {
             HighlightObjectInHierarchy(contextObject);
         });
+
+        LogToFile(message, logLevel);
+        PausePlayMode(logLevel);
     }
     
     public void Log(string message, string description, Level logLevel = Level.Debug)
@@ -307,6 +354,8 @@ public class ZartoxEditorConsole : EditorWindow
             logDescriptionLabel.text = "";
         });
 
+        LogToFile(message, logLevel);
+        PausePlayMode(logLevel);
     }
     
     public void Log(string message, string description, GameObject contextObject, Level logLevel = Level.Debug)
@@ -331,18 +380,52 @@ public class ZartoxEditorConsole : EditorWindow
         {
             logDescriptionLabel.text = "";
         });
+
+        LogToFile(message, logLevel);
+        PausePlayMode(logLevel);
+    }
+
+    private void LogToFile(string message, Level level = Level.Debug)
+    {
+        if (!logToFile)
+            return;
+
+        string directoryPath = Application.dataPath + "/Logs";
+
+        if (!Directory.Exists(directoryPath))
+            Directory.CreateDirectory(directoryPath);
+
+        string fileName = DateTime.Now.ToString("yyyy-MM-dd") + "_ConsoleLogs.txt";
+        string filePath = directoryPath + "/" + fileName;
+
+        using (StreamWriter writer = new StreamWriter(filePath, true))
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            writer.WriteLine($"[{timestamp}] [{level.ToString().ToUpper()}] : {message}");
+        }
     }
 
     private void HighlightObjectInHierarchy(GameObject gameObject)
     {
         if (gameObject != null)
             EditorGUIUtility.PingObject(gameObject);
+        else
+            Log("The object you passed for context as probably been destroyed... Can't highlight it in hierarchy.", Level.Warning);
     }
 
     private void DeleteLogsOverLimit()
     {
         if (logsScrollView.childCount > maxConsoleLines)
             logsScrollView.RemoveAt(0);
+    }
+
+    private void PausePlayMode(Level logLevel)
+    {
+        if (logLevel == Level.Warning && pauseOnWarning)
+            EditorApplication.isPaused = true;
+        
+        if (logLevel == Level.Error && pauseOnError)
+            EditorApplication.isPaused = true;
     }
 
     private string GetFormattedMessage(string message, Level logLevel)
@@ -417,24 +500,67 @@ public class ZartoxEditorConsole : EditorWindow
 
     }
 
+    [MenuItem("Tools/Delete today's Logs")]
+    public static void DeleteTodaysLogs()
+    {
+        string logsDir = Application.dataPath + "/Logs";
+        string[] logFiles = Directory.GetFiles(logsDir);
+        int counter = 0;
+
+        foreach (string logFile in logFiles)
+        {
+            FileInfo fileInfo = new FileInfo(logFile);
+
+            if (fileInfo.CreationTime.Date == DateTime.Today)
+            {
+                File.Delete(logFile);
+                counter++;
+            }
+        }
+
+        AssetDatabase.Refresh();
+        Debug.Log($"[Zartox Log] : Deleted today's logs ({counter / 2} files) in /Logs...");
+    }
+
+    [MenuItem("Tools/Delete every Log")]
+    public static void DeleteEveryLogs()
+    {
+        string[] filePaths = Directory.GetFiles(Application.dataPath + "/Logs");
+        int counter = 0;
+
+        foreach (string filePath in filePaths)
+        {
+            File.Delete(filePath);
+            counter++;
+        }
+
+        AssetDatabase.Refresh();
+        Debug.Log($"[Zartox Log] : Deleted every logs ({counter / 2} files)...");
+    }
+
     #endregion
 
     #region Commands
 
     private void ExecuteUserCommand()
     {
-        string command = userCommandTextField.value;
+        string completeCommand = userCommandTextField.value;
+        string[] parts = completeCommand.Split(' ');
+        string command = parts[0];
 
-        if (commands.TryGetValue(command, out ICommand commandObject))
+        if (commands.TryGetValue(completeCommand, out ICommand commandObject))
         {
             commandObject.Execute();
         }
+        else if (parts[1] == "help" && commands.TryGetValue(command, out ICommand obj))
+        {
+            Log(obj.help, $"Help message for the {obj.name} command...", Level.Info);
+        }
         else
         {
-            Log("Invalid command", Level.Error);
+            Log("Invalid command", Level.Warning);
         }
 
-        // Effacer le champ de texte après l'exécution
         userCommandTextField.value = "";
     }
 
