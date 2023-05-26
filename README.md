@@ -35,6 +35,8 @@ I'll add informations on how to use it once it's done.
 ### 0.0.5:
         - Added play mode pause on error (optional)
         - Added play mode pause on warning (optional)
+        - Added clear console on play mode enter (optional)
+        - Added clear console on recompile (optional)
 ---------------------------------------
 
 
