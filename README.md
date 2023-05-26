@@ -32,6 +32,10 @@ I'll add informations on how to use it once it's done.
         - Added focus on logs to select them
         - Added a context for logs (when clicked: highlight gameObject in hierarchy)
 ---------------------------------------
+### 0.0.5:
+        - Added play mode pause on error (optional)
+        - Added play mode pause on warning (optional)
+---------------------------------------
 
 
 ## Known bugs:
