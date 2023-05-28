@@ -51,5 +51,5 @@ I'll add informations on how to use it once it's done.
 
 ## Known bugs:
 ---------------------------------------
-        - Opening 2 instances of the console [Temporary fix: reset yout UI to default]
+        - Opening 2 instances of the console [Temporary fix: reset yout UI to default]: FIXED
 ---------------------------------------
