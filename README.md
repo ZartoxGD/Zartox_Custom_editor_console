@@ -44,6 +44,9 @@ I'll add informations on how to use it once it's done.
         - Every log file created is now named the date it was created
         - Added a mark in the log file for playmode start and playmode end 
 ---------------------------------------
+### 0.0.6:
+        - Enabled RichText in the console (you can now use <b>test</b>, etc...)
+---------------------------------------
 
 
 ## Known bugs:
